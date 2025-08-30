@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Grade System</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #04827e, #415dea);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #0e4d6e;
+      padding: 25px;
+      border-radius: 20px;
+      width: 600px;
+      box-shadow: 0 8px 20px rgba(2, 8, 10, 0.971);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #eac328;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #ff4757;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: #ff6b81; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    tr:nth-child(even) {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .pass { background: #2ed573; }
+    .fail { background: #ff4757; }
+
+    .stats {
+      margin-top: 20px;
+      padding: 15px;
+      background: beige;
+      border-radius: 12px;
+      text-align: center;
+      color:#1a1010;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Student Grade System</h1>
+
+    <!-- Form -->
+    <input type="text" id="name" placeholder="Enter Student Name">
+    <input type="number" id="marks" placeholder="Enter Marks (0-100)">
+    <button onclick="addStudent()">Add Student</button>
+
+    <!-- Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Marks</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="studentList"></tbody>
+    </table>
+
+    <!-- Stats -->
+    <div class="stats">
+      <p id="avg">Average: 0</p>
+      <p id="topper">Topper: N/A</p>
+    </div>
+  </div>
+    <script>
+  let students = [];
+
+  function addStudent() {
+    let name = document.getElementById("name").value.trim();
+    let marks = parseInt(document.getElementById("marks").value);
+
+    let namePattern = /^[A-Za-z ]+$/;
+     if (name === "" || !namePattern.test(name)) {
+      alert("⚠️ Name should contain only alphabets and spaces!");
+      return;
+     }
+
+    if (isNaN(marks)) {
+      alert("Please enter valid marks!");
+      return;
+    }
+
+    let exists = students.some(s => s.name.toLowerCase() === name.toLowerCase() && s.marks === marks);
+    if (exists) {
+      alert("This student with the same marks is already added!");
+      return;
+    }
+
+    students.push({ name, marks });
+    document.getElementById("name").value = "";
+    document.getElementById("marks").value = "";
+
+    displayStudents();
+    calculateStats();
+  }
+
+  function displayStudents() {
+    let list = document.getElementById("studentList");
+    list.innerHTML = "";
+
+    students.forEach(s => {
+      let status = s.marks >= 40 ?
+        `<span class="badge pass">Pass</span>` :
+        `<span class="badge fail">Fail</span>`;
+
+      list.innerHTML += `
+        <tr>
+          <td>${s.name}</td>
+          <td>${s.marks}</td>
+          <td>${status}</td>
+        </tr>`;
+    });
+  }
+
+  function calculateStats() {
+    if (students.length === 0) return;
+
+    let avg = students.reduce((sum, s) => sum + s.marks, 0) / students.length;
+    document.getElementById("avg").textContent = `Average: ${avg.toFixed(2)}`;
+
+    let topper = students.reduce((max, s) => (s.marks > max.marks ? s : max));
+    document.getElementById("topper").textContent = `Topper: ${topper.name} (${topper.marks})`;
+  }
+</script>
+</body>
+</html>
